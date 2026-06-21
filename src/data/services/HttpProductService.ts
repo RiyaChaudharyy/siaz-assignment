@@ -12,10 +12,9 @@ export class HttpProductService implements ProductService {
   constructor(private readonly options: HttpProductServiceOptions) {}
 
   async getProduct(brandCode: string, productCode: string): Promise<Product> {
-    const path = `/api/Product/GetProductForWidget/${encodeURIComponent(brandCode)}/${encodeURIComponent(productCode)}`;
-    const res = await fetch(`${this.options.baseUrl}${path}`, {
-      headers: { Accept: 'application/json', 'SAIZ-API-KEY': this.options.apiKey },
-    });
+    const res = await fetch(
+      `/api/saiz/${encodeURIComponent(brandCode)}/${encodeURIComponent(productCode)}`,
+    );
     if (!res.ok) {
       throw new Error(`Request failed (${res.status} ${res.statusText})`);
     }
