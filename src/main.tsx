@@ -49,10 +49,7 @@ const mount = () => {
   injectFont();
   injectStyles();
 
-  const productService = new HttpProductService({
-    baseUrl: config.baseUrl,
-    apiKey: config.apiKey,
-  });
+  const productService = new HttpProductService();
   const store = createStore({ productService });
 
   createRoot(container).render(
