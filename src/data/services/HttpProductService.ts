@@ -5,14 +5,17 @@ import { mapProduct } from '../mappers/productMapper';
 
 export class HttpProductService implements ProductService {
   async getProduct(brandCode: string, productCode: string): Promise<Product> {
-    const res = await fetch(
-      `/api/saiz/${encodeURIComponent(brandCode)}/${encodeURIComponent(productCode)}`,
-      {
-        headers: {
-          Accept: 'application/json',
-        },
-      },
-    );
+  const query = new URLSearchParams({
+  brandCode,
+  productCode,
+});
+
+const res = await fetch(`/api/saiz?${query.toString()}`, {
+  headers: {
+    Accept: 'application/json',
+  },
+});
+
 
     if (!res.ok) {
       throw new Error(`Request failed (${res.status} ${res.statusText})`);
