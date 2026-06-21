@@ -1,7 +1,5 @@
 import type { WidgetConfig } from './types';
 
-const DEFAULT_BASE_URL = 'https://staging-saiz-app.com';
-
 const required = (value: string | undefined, name: string): string => {
   if (!value) throw new Error(`[SAIZ] missing required data-${name} attribute`);
   return value;
@@ -9,8 +7,8 @@ const required = (value: string | undefined, name: string): string => {
 
 export const readWidgetConfig = (el: HTMLElement): WidgetConfig => {
   const data = el.dataset;
-  const apiKey = (import.meta.env.VITE_SAIZ_API_KEY ?? '').trim();
-  const baseUrl = (import.meta.env.VITE_SAIZ_BASE_URL ?? DEFAULT_BASE_URL).trim();
+  const apiKey = (import.meta.env.VITE_SAIZ_API_KEY);
+  const baseUrl = (import.meta.env.VITE_SAIZ_BASE_URL);
 
   return {
     brandCode: required(data.brandcode, 'brandcode'),
