@@ -16,11 +16,15 @@ export default defineConfig(({ mode }) => {
           headers: {
             'SAIZ-API-KEY': env.SAIZ_API_KEY,
           },
-          rewrite: (path) =>
-            path.replace(
-              /^\/api\/saiz/,
-              '/api/Product/GetProductForWidget',
-            ),
+          rewrite: (path) => {
+            const url = new URL(path, 'http://localhost');
+            const brandCode = url.searchParams.get('brandCode') ?? '';
+            const productCode = url.searchParams.get('productCode') ?? '';
+
+            return `/api/Product/GetProductForWidget/${encodeURIComponent(
+              brandCode,
+            )}/${encodeURIComponent(productCode)}`;
+          },
         },
       },
     },
