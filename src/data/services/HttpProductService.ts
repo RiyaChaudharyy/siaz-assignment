@@ -1,24 +1,24 @@
-import type { ProductService } from '../../domain/ports/ProductService';
-import type { Product } from '../../domain/models/Product';
-import type { ProductDto } from '../dto/ProductDto';
-import { mapProduct } from '../mappers/productMapper';
-
-export interface HttpProductServiceOptions {
-  baseUrl: string;
-  apiKey: string;
-}
+import type { ProductApiResponse } from '../dto/ProductApiResponse';
+import type { ProductService } from '../contracts/ProductService';
 
 export class HttpProductService implements ProductService {
-  constructor(private readonly options: HttpProductServiceOptions) {}
-
-  async getProduct(brandCode: string, productCode: string): Promise<Product> {
-    const res = await fetch(
+  async getProduct(
+    brandCode: string,
+    productCode: string,
+  ): Promise<ProductApiResponse> {
+    const response = await fetch(
       `/api/saiz/${encodeURIComponent(brandCode)}/${encodeURIComponent(productCode)}`,
+      {
+        headers: {
+          Accept: 'application/json',
+        },
+      },
     );
-    if (!res.ok) {
-      throw new Error(`Request failed (${res.status} ${res.statusText})`);
+
+    if (!response.ok) {
+      throw new Error(`Unable to load product. Status: ${response.status}`);
     }
-    const dto = (await res.json()) as ProductDto;
-    return mapProduct(dto, { brandCode, productCode });
+
+    return response.json();
   }
 }
