@@ -1,46 +1,55 @@
 const SAIZ_BASE_URL = 'https://staging-saiz-app.com';
 
-export async function GET(request: Request) {
-  const apiKey = process.env.SAIZ_API_KEY;
+export default {
+  async fetch(request: Request) {
+    const apiKey = process.env.SAIZ_API_KEY;
 
-  if (!apiKey) {
-    return Response.json(
-      { message: 'SAIZ_API_KEY is missing.' },
-      { status: 500 },
-    );
-  }
+    if (!apiKey) {
+      return Response.json(
+        { message: 'SAIZ_API_KEY is missing.' },
+        { status: 500 },
+      );
+    }
 
-  const pathParts = new URL(request.url).pathname
-    .split('/')
-    .filter(Boolean);
+    const parts = new URL(request.url).pathname
+      .split('/')
+      .filter(Boolean);
 
-  const brandCode = pathParts[pathParts.length - 2];
-  const productCode = pathParts[pathParts.length - 1];
+    const brandCode = parts[parts.length - 2];
+    const productCode = parts[parts.length - 1];
 
-  const apiUrl =
-    `${SAIZ_BASE_URL}/api/Product/GetProductForWidget/` +
-    `${encodeURIComponent(brandCode)}/${encodeURIComponent(productCode)}`;
+    if (!brandCode || !productCode) {
+      return Response.json(
+        { message: 'brandCode and productCode are required.' },
+        { status: 400 },
+      );
+    }
 
-  try {
-    const response = await fetch(apiUrl, {
-      headers: {
-        Accept: 'application/json',
-        'SAIZ-API-KEY': apiKey,
-      },
-    });
+    const apiUrl =
+      `${SAIZ_BASE_URL}/api/Product/GetProductForWidget/` +
+      `${encodeURIComponent(brandCode)}/${encodeURIComponent(productCode)}`;
 
-    return new Response(response.body, {
-      status: response.status,
-      headers: {
-        'Content-Type':
-          response.headers.get('content-type') ?? 'application/json',
-        'Cache-Control': 'no-store',
-      },
-    });
-  } catch {
-    return Response.json(
-      { message: 'Unable to connect to SAIZ API.' },
-      { status: 502 },
-    );
-  }
-}
+    try {
+      const response = await fetch(apiUrl, {
+        headers: {
+          Accept: 'application/json',
+          'SAIZ-API-KEY': apiKey,
+        },
+      });
+
+      return new Response(response.body, {
+        status: response.status,
+        headers: {
+          'Content-Type':
+            response.headers.get('content-type') ?? 'application/json',
+          'Cache-Control': 'no-store',
+        },
+      });
+    } catch {
+      return Response.json(
+        { message: 'Unable to connect to SAIZ API.' },
+        { status: 502 },
+      );
+    }
+  },
+};
