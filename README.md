@@ -103,7 +103,7 @@ flowchart TD
     S[ThemeSwitch -> themeSlice] --> T[ModelContext sets CSS vars]
 ```
 
-Same thing in plain words:
+Work Flow:
 
 ```
 main.tsx
@@ -132,44 +132,3 @@ Navigation lives in `navigationSlice`. `selector` and `recommendation` are the
 linear flow (the progress bar reads 50% then 100%); `info` is a branch reached
 from the selector's `i` icon and returns to it with the back arrow.
 
----
-
-## The patterns (what to point at in a review)
-
-- **Clean layers.** `data` (API), `domain` (logic + models), `store` (state),
-  `ui` (screens/components). Each layer only depends on the one below it, so a
-  change in one place doesn't ripple everywhere.
-- **Factory for screens** – `brands/screenFactory.ts` takes a `brandCode` and
-  returns that brand's screen set (`registry.ts`), falling back to the default.
-  A new brand registers its own screens without touching the modal.
-- **Service class for the API** – `HttpProductService` fetches the product and
-  hands the response to the mapper. It implements the `ProductService` interface
-  so the rest of the app depends on the contract, not the fetch details.
-- **Mapper** – `productMapper.ts` is the only place that knows the raw API
-  shape. It converts the response into our own `Product`, so if the API changes,
-  only the mapper changes.
-- **Redux slices** – `product` (the loaded product), `navigation` (which screen
-  is showing), `measurements` (the shopper's input), `theme` (light/dark).
-- **ModelContext for theming** – holds the brand + mode, resolves a palette, and
-  exposes it as CSS variables. Components only use `var(--saiz-*)`, so theme and
-  brand colour changes happen in one file.
-
----
-
-## Making changes quickly
-
-| You want to… | Edit |
-| --- | --- |
-| Change colours, font, or radius | `src/theme/themes.ts` |
-| Add a brand with its own colours | add an entry to `BRAND_THEMES` in `themes.ts` |
-| Add a brand with its own screens | add screens + register them in `brands/registry.ts` |
-| Change the size logic | `src/domain/services/recommendationEngine.ts` |
-| Change how the API maps to our model | `src/data/mappers/productMapper.ts` |
-| Change selector fields/labels | `src/brands/default/SelectorScreen.tsx` |
-| Change the "How it works" copy | `src/brands/default/InfoScreen.tsx` |
-| Change the recommendation layout | `src/brands/default/RecommendationScreen.tsx` |
-| Change spacing / pixel details | `src/ui/styles.css` (everything is prefixed `.saiz-`) |
-| Add a stored value | a slice in `src/store/slices/` |
-
-All UI text and the screens live under `src/brands/default/`, so that's the
-first place to look for "change this on the screen" requests.
