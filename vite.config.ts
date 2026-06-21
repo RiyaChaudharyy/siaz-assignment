@@ -12,6 +12,7 @@ export default defineConfig(({ mode }) => {
         '/api/saiz': {
           target: 'https://staging-saiz-app.com',
           changeOrigin: true,
+          secure: true,
           headers: {
             'SAIZ-API-KEY': env.SAIZ_API_KEY,
           },
